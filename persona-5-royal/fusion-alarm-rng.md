@@ -129,16 +129,17 @@ Approximate: the game's slot shuffle is slightly biased, so some slots are a lit
 
 ### Which upgrades exist
 
-Each fixed upgrade has a requirement, most likely Joker's level (not yet confirmed). The useful ones:
+Each fixed upgrade needs Joker to be at least a certain level (the number in brackets below). Below that level the
+upgrade is skipped and the skill falls through to the random outcomes. The useful ones:
 
-**No requirement**
+**Any level**
 
 - Resist X → Null X → Repel X → Drain X (every element and Phys, one step per alarm)
 - Endure → Enduring Soul
 - Agidyne / Bufudyne / … → Maragidyne / Mabufudyne / …
 - Growth 2 → Growth 3, Regenerate 2 → 3, Invigorate 2 → 3
 
-**Requirement 30–45**
+**Joker level 30–45**
 
 - Assault Dive → Gatling Blow (30) → Megaton Raid (40)
 - Swift Strike → Deathbound (40)
@@ -147,7 +148,7 @@ Each fixed upgrade has a requirement, most likely Joker's level (not yet confirm
 - Megido → Megidola (35)
 - Rising Slash → Deadly Fury (45)
 
-**Requirement 55–65 (late game)**
+**Joker level 55–65 (late game)**
 
 - Megaton Raid → God's Hand
 - Sword Dance → Brave Blade
@@ -159,7 +160,7 @@ Each fixed upgrade has a requirement, most likely Joker's level (not yet confirm
 - Matarunda etc. → Debilitate
 
 Example: Repel Phys early means Resist Phys → Null Phys on one alarm fusion, then Null Phys → Repel Phys on another,
-each about 50–75% with a small result persona. Brave Blade early isn't possible: its upgrade needs requirement 65, and
+each about 50–75% with a small result persona. Brave Blade early isn't possible: its upgrade needs Joker at level 65, and
 the random route is about 0.2% per changed skill.
 
 ## Open questions
@@ -167,7 +168,6 @@ the random route is about 0.2% per changed skill.
 - **Consoles.** Untested. A quick check: set the console clock to a fixed time, boot, load the same alarm save and fuse
   the same way, five times. If any two results match, the console version may be deterministic and worth a closer
   look.
-- **The upgrade requirement.** Most likely Joker's level; can be confirmed in the code.
 - **What triggers the alarm.** A percentage roll whose chance grows with each counted event, and the first alarm is
   guaranteed after a set count. Which event counts isn't confirmed yet.
 - **Exact odds per fusion.** An offline calculator (no game reading, fine for runs) could give exact odds for a given
