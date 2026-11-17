@@ -96,10 +96,15 @@ None of that changes which set comes up. It's retries only:
 
 ## Things to know when planning
 
-- **After a normal alarm fusion, the next fusion in the same alarm can be a forced accident.** The game remembers the
-  alarm's last action and forces an accident when a normal fusion follows a normal fusion. This was seen once in game
-  (two non-glowing personas fused second gave an accident with no roll), but a later run's second fusion was normal,
-  so what resets it isn't pinned down yet. An accident from two non-glowing personas gives no skill set.
+- **Two normal fusions in a row during an alarm: the second is always an accident.** The game remembers the alarm's
+  last action. After a normal fusion, the next fusion is a forced accident, glowing or not (two non-glowing personas
+  give an accident with no skill set).
+- **An Electric Chair in between stops it.** After an Electric Chair, the next fusion is never an accident unless a
+  glowing persona goes in. Confirmed in game. So the recipe for a glowing pair is:
+  1. Fuse persona A (it glows).
+  2. Electric Chair any persona.
+  3. Fuse persona B (it glows, no accident).
+  4. Fuse A + B: accident with the Dyne set table.
 - **One alarm can give several tries.** Every glowing pair you fuse is a separate 5.9% roll, if you can make enough
   glowing personas while the alarm is on.
 - **Leaving the Velvet Room ends the alarm and wipes the glow.** There's no saving between the fusions, so a failed
@@ -107,8 +112,8 @@ None of that changes which set comes up. It's retries only:
 
 ## Open questions
 
-- **What clears the forced accident.** The code points to doing a different kind of Velvet Room action in between
-  (it looks like Gallows), but this hasn't been tested.
+- **Gallows in between.** The code suggests Gallows only forces an accident on a second Gallows, so it may not stop a
+  forced fusion accident the way Electric Chair does. Untested.
 - **Whether an accident persona glows.** The code suggests every alarm fusion result glows, which would make an
   accident persona usable as the second glowing persona. Unconfirmed.
 - **Consoles.** Untested.
