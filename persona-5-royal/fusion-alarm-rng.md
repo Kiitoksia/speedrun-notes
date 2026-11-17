@@ -4,7 +4,7 @@ How the game decides the random skills in an alarm fusion, whether that can be m
 runner can do with it instead.
 
 *PC version (Steam build 15515071). Findings from reverse engineering the executable plus in-game tests, November
-2026.*
+2026. See also the [summary of fusion manipulation findings](fusion-manipulation.md).*
 
 ## The short version
 
@@ -202,6 +202,5 @@ predicted every tested fusion correctly, but this case hasn't been checked in ga
 
 ## Tools used
 
-A debug-only Reloaded-II mod (RNG Tracer) hooks the game's random functions to log every call, predict alarm results
-from the live RNG state, force a seed and test determinism. It reads game memory, so it's for research and practice
-only, not runs.
+A debug-only Reloaded-II mod (RNG Tracer) logs the game's random number calls, forces a seed and tests determinism. It
+is a research tool, not something for runs.

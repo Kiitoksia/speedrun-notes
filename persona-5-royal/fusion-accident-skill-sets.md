@@ -4,16 +4,17 @@ How the "fuse two glowing personas" trick works, what skill sets it can give, th
 Nuke (Frei) Dyne set can be guaranteed.
 
 *PC version (Steam build 15515071). Findings from reverse engineering the executable and the game's data files, plus an
-in-game test, November 2026. See also [Fusion Alarm RNG](fusion-alarm-rng.md).*
+in-game tests, November 2026. See also the [summary of fusion manipulation findings](fusion-manipulation.md) and
+[Fusion Alarm RNG](fusion-alarm-rng.md).*
 
 ## The short version
 
 | | Verdict |
 |---|---|
-| **Can you guarantee the Frei Dyne set?** | **No.** It's one random pick with no player input. |
+| **Can you guarantee the Frei Dyne set?** | **No.** It's one random pick, and nothing on screen can be used to time it. |
 | **Odds of the Frei Dyne set** | **5.9%** (6 in 101) per fusion of two glowing personas. |
 | **Odds of Freidyne on its own** | **14.9%** (15 in 101) per fusion of one glowing and one normal persona (no Mafreidyne). |
-| **Timing manip** | **No.** The same random number generator as the alarm skills, which can't be timed on PC. |
+| **Timing manip** | **No.** Too many hidden effects share the random number generator. |
 | **Consoles** | **Untested.** |
 
 ## How it works
@@ -78,9 +79,9 @@ Freidyne is 4th in its three sets, so the accident persona needs at least 4 skil
 
 ## Can the Frei set be guaranteed or manipulated?
 
-**No.** The set is decided by one number from the game's main random number generator. That's the same generator as
-the alarm bonus skills, and on PC it can't be timed: even with identical inputs it drifts apart from one boot to the
-next, because load times vary (details in [Fusion Alarm RNG](fusion-alarm-rng.md)).
+**No.** The set is decided by one number from the game's main random number generator. Clock (boot-time)
+manipulation, counting things on screen and using an earlier fusion's result were all checked and don't work on PC;
+the reasons are on the [summary page](fusion-manipulation.md).
 
 The only things a runner controls are:
 
@@ -89,7 +90,7 @@ The only things a runner controls are:
 
 None of that changes which set comes up. It's retries only:
 
-| Goal | Fusion | Chance per try | Average tries |
+| Goal | Fusion | Chance per alarm | Average alarms |
 |---|---|---:|---:|
 | Frei Dyne set (Freidyne + Mafreidyne + Nuke Boost/Amp/Break...) | glowing + glowing | 5.9% | ~17 |
 | Freidyne (no Mafreidyne) | glowing + normal | 14.9% | ~7 |
@@ -105,8 +106,8 @@ None of that changes which set comes up. It's retries only:
   2. Electric Chair any persona.
   3. Fuse persona B (it glows, no accident).
   4. Fuse A + B: accident with the Dyne set table.
-- **One alarm can give several tries.** Every glowing pair you fuse is a separate 5.9% roll, if you can make enough
-  glowing personas while the alarm is on.
+- **Plan for one roll per alarm.** After the pair's accident the twins end the alarm (runner-observed), and trying to
+  chain fusions without something in between gets you kicked out too.
 - **Leaving the Velvet Room ends the alarm and wipes the glow.** There's no saving between the fusions, so a failed
   roll means waiting for another alarm or resetting to before it.
 
@@ -114,6 +115,4 @@ None of that changes which set comes up. It's retries only:
 
 - **Gallows in between.** The code suggests Gallows only forces an accident on a second Gallows, so it may not stop a
   forced fusion accident the way Electric Chair does. Untested.
-- **Whether an accident persona glows.** The code suggests every alarm fusion result glows, which would make an
-  accident persona usable as the second glowing persona. Unconfirmed.
 - **Consoles.** Untested.
