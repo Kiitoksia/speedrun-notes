@@ -163,6 +163,33 @@ Example: Repel Phys early means Resist Phys → Null Phys on one alarm fusion, t
 each about 50–75% with a small result persona. Brave Blade early isn't possible: its upgrade needs Joker at level 65, and
 the random route is about 0.2% per changed skill.
 
+### Skills with no fixed upgrade into them: Tetra Break
+
+Some skills, like Tetra Break, aren't the result of any fixed upgrade, so they can only come from the random outcomes.
+There's no level requirement, but the odds are low. Tetra Break is tier 7, and the tier 7 random pool has 37 skills,
+so a "random tier 7 skill" is Tetra Break about 1 time in 37 (slightly better, since the persona's own skills are
+excluded).
+
+Chance that one changed skill becomes Tetra Break, by the tier of the skill being changed:
+
+| Skill being changed | Route to tier 7 | Chance per changed skill |
+|---|---|---:|
+| Tier 4 | 3 tiers up (1%) | ~0.03% |
+| Tier 5 | 2 tiers up (5%) | ~0.13% |
+| Tier 6, no fixed upgrade | 1 tier up (~9.5%) | ~0.26% |
+| Tier 6, with fixed upgrade | 1 tier up (~1.9%) | ~0.05% |
+| **Tier 7, no fixed upgrade** | **same tier (~63%)** | **~1.75%** |
+| Tier 7, with fixed upgrade | same tier (~12.6%) | ~0.35% |
+| Tier 8, no fixed upgrade | 1 tier down (30%) | ~0.8% |
+
+A tier 6 skill can't go 3 tiers up (the tier 9 pool is empty), and a tier 7 skill can't go up 2 or 3, so the game
+skips those outcomes without rolling and the lower ones come up more often than in the general table.
+
+Best setup: a result persona with a single skill that is tier 7 with no fixed upgrade. That skill is always the one
+changed, and becomes Tetra Break about 1.75% of the time, around 57 resets on average. Several such skills on the
+persona give several chances per fusion (about 3.4% with three of them). These odds come from the same model that
+predicted every tested fusion correctly, but this case hasn't been checked in game.
+
 ## Open questions
 
 - **Consoles.** Untested. A quick check: set the console clock to a fixed time, boot, load the same alarm save and fuse
