@@ -8,6 +8,27 @@ Yaldabaoth.
 field, event and scheduler scripts, and the field hit tables (`FIELD/HIT/*.HTB`), November 2026. Not yet checked in
 game; the last section lists what to watch.*
 
+## In plain terms
+
+- Jose's EXP/money/item boost doesn't wear off. Your stamp points stay set. Before giving battle rewards, the game
+  checks "are we in Mementos?" and only gives the boost if the answer is yes.
+- The door at the bottom of the Path of Da'at turns that "in Mementos" switch **off** the first time you go
+  through it (the visit with the "Is this thing seriously a door?" scene). That's why the boost normally stops in
+  the Depths.
+- That door scene only plays once. Every later trip through the door uses a plain version **that doesn't turn the
+  switch off**.
+- Going back up to Mementos (the exit at the Depths entrance, or the trip to Leblanc and back on 12/24) turns the
+  switch back **on**.
+
+**The trick:** go through the door once, go back up to Mementos, then come back down. The switch stays on, and the
+boost applies for the rest of the Depths, the Holy Grail and Yaldabaoth.
+
+**When it ends:** nothing in the ending or the date change resets it, and saving keeps it. It turns off the first
+time you **leave the Metaverse** in the third semester, by exiting Mementos or Maruki's Palace. Until then it also
+applies in Maruki's Palace.
+
+The rest of this page is the technical detail behind that.
+
 ## Short version
 
 - Jose's modifier isn't a timed buff and nothing "clears" it. The stamp points you give to EXP, money and items
