@@ -12,3 +12,5 @@ Research notes for speedrunning.
   glowing personas gives, the odds of every skill set (Frei Dyne set 5.9%), and why it can't be guaranteed.
 - [Jose's EXP boost in the Depths](persona-5-royal/jose-exp-boost-depths.md): why the stamp bonus switches off on
   the first Depths entry but stays on after you go back up, through the Holy Grail and Yaldabaoth.
+- [Buying Will Seeds from Jose](persona-5-royal/jose-will-seeds.md): why the skipped seeds aren't for sale on
+  12/24 without an optional 2nd Mementos visit, and why the Casino seeds need the 6th barrier open.
