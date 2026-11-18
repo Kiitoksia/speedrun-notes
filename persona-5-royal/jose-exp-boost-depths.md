@@ -23,9 +23,14 @@ game; the last section lists what to watch.*
 **The trick:** go through the door once, go back up to Mementos, then come back down. The switch stays on, and the
 boost applies for the rest of the Depths, the Holy Grail and Yaldabaoth.
 
-**When it ends:** somewhere between Yaldabaoth and the start of the third semester. Tested: the 1/2 Belial fight
-in Maruki's Palace has **no** boost icon. The exact point where it resets isn't known yet; none of the game scripts
-I could read turn it off in that stretch.
+**When it ends:** straight after Yaldabaoth. The final boss sequence (Holy Grail, Yaldabaoth, the ending scenes)
+finishes with the game's normal "palace cleared, back to the real world" routine, and that turns the switch off. So
+Yaldabaoth is the last fight that gets the boost; the 1/2 Belial fight doesn't (tested).
+
+**Can it be done earlier?** Not that we've found. Every way back to the real world turns the switch off, including
+the end of boss fights started from the real world (tested: Yusuke's confidant fight on 9/19 gets the boost, but the
+fight's own script turns it off before you leave). The 12/24 trick works because the Depths, the Holy Grail and
+Yaldabaoth are one long stay in the Metaverse with no return in between.
 
 The rest of this page is the technical detail behind that.
 
@@ -44,10 +49,10 @@ The rest of this page is the technical detail behind that.
   `DUNGEON_EXIT`), the 12/24 trip to Leblanc and back (`FHIT_010_001_00` `Main_LastDungeonShop`), and entering
   from Shibuya (`FINI_001_006` `GOTO_MEMENTOS`). So after one trip back up, the flag stays on for the rest of the
   Depths and the Qliphoth World. The EXP getter checks only that flag, so battles there get the multiplier.
-- **It's gone by 1/2.** In game, the 1/2 Belial fight (Maruki's Palace) has no boost icon. What resets it
-  between Yaldabaoth and 1/2 isn't found yet: no decompiled field, event, scheduler or battle script turns flag
-  12310 off in that stretch, and 1/2 enters the palace (`sdl01_02_PM_B_S3`, `CALL_FIELD(162, 1, 2, 0)`) without
-  touching it. See section 5.
+- **It ends right after Yaldabaoth.** Boss fights run from `FIELD/SCRIPT/BOSS.BF` (`FLD_START_BOSS(n)` runs one of
+  its procedures). `D08_LAST_BOSS_BATTLE` plays the Holy Grail, Yaldabaoth (`CALL_EVENTBATTLE(459, 2, 785)`) and the
+  ending scenes, then calls `PALACE_CLEAR_SYS()`, which runs `dungeon_return` and clears 12310 (and 12308) through
+  `FLD_EXIT_DUNGEON`. Confirmed in game: no boost at the 1/2 Belial fight. See section 5.
 
 ## 1. Where the modifier lives
 
@@ -174,23 +179,29 @@ back, and the next descent uses the GENERIC trigger. So leaving doesn't help on 
 
 ## 5. What clears it after Yaldabaoth
 
-**Unresolved.** Tested in game: the 1/2 Belial fight has no boost icon, so something between Yaldabaoth and 1/2
-resets it. Static analysis hasn't found what:
+Every boss fight started with `FLD_START_BOSS(n)` runs a procedure from the shared boss script
+`FIELD/SCRIPT/BOSS.BF`, which handles what happens after the fight. Found by logging the flag writes live, with the
+running script procedure (November 2026).
 
-- The script-side clears are all accounted for: `dungeon_return` procedures (each ending in `FLD_EXIT_DUNGEON`),
-  `GO_TO_161_01` (can't run again, 5056 is on), `GOTO_SHOP` (only 12/24 to 12/31) and `CORP008`. None of them run
-  after Yaldabaoth as far as the scripts show.
-- The scheduler for 12/24 night through 1/2 (`sdl12_24_PM_D`, `sdl01_01_*_S3`, `sdl01_02_*_S3`) turns off
-  flag 12308 (`+20`, "in the Metaverse") but not 12310. `EveryNight` and `EveryMorning` don't touch section 5.
-  1/2 enters Maruki's Palace with `CALL_FIELD(162, 1, 2, 0)` and doesn't touch it either.
-- Battle event scripts (`BATTLE/EVENT/SCRIPT`, `BATTLE/SCRIPT`), field box, object, voice and safety-room scripts
-  don't write it.
-- The only native write found is inside `FLD_EXIT_DUNGEON`. The game does have data-driven flag writes (table
-  records with a section and index, for example `0x1410A88E6` and `0x1410A9CC7` build `0x50000000 + index`), and
-  some code is in protected sections that can't be read statically. Either could be the reset.
+**Yaldabaoth.** `D08_LAST_BOSS_BATTLE` runs the whole final sequence: Holy Grail (battles 787 and 788), the ending
+scenes, Yaldabaoth (`CALL_EVENTBATTLE(459, 2, 785)`), more scenes and a movie. Then it sets
+`COUNT(152) = 90000` and calls `PALACE_CLEAR_SYS()`. That runs `dungeon_return`, which turns off flags 12308, 12310
+and 12309 and calls `FLD_EXIT_DUNGEON`, then `CALL_CALENDAR`. So Yaldabaoth is the last battle with the boost, and
+nothing after it gets it. Confirmed in game: the 1/2 Belial fight has no boost icon.
 
-The quickest way to settle it is a live log of flag 12310 from the end of the Yaldabaoth fight to 1/2 (table
-below). The first frame where bit 22 drops points to the routine.
+**Earlier attempts.** Yusuke's confidant-start fight (`CORP004` `MAIN_COOP_YUSUKE`) turns on 12308 and 12310 from the
+real world and calls `FLD_START_BOSS(71)`. In `BOSS.BF`, `D00_YUSUKE_COOP_BATTLE` plays the fight (it does get the
+boost), then events 704_13 and 704_300, then `BIT_OFF` on 12308, 12310 and 12309 and `CALL_CALENDAR`. Live log
+(9/19):
+
+```
+BIT_ON(12308), BIT_ON(12310), FLD_START_BOSS(71)        in MAIN_COOP_YUSUKE
+CALL_EVENTBATTLE(704, 12, 702) ... CALL_EVENT(704, 300) in D00_YUSUKE_COOP_BATTLE
+BIT_OFF(12308), BIT_OFF(12310), CALL_CALENDAR()         in D00_YUSUKE_COOP_BATTLE
+```
+
+Every other `BOSS.BF` procedure that ends a Metaverse stay goes through `dungeon_return` or `PALACE_CLEAR_SYS`.
+No route has been found that keeps 12310 on into another fight after you return to the real world.
 
 ## What to watch live
 
@@ -205,8 +216,8 @@ Poll these (with a memory reader or flag logger) on 12/24 and after Yaldabaoth:
 | EXP multiplier | breakpoint or return value of `0x1410CE820` | 1.0 means no boost |
 
 Expected: 12310 goes off on the first `CALL_FIELD(161)`, on again after "go back up" or the Leblanc trip, stays on
-after the second Depths entry and through Yaldabaoth, then goes off somewhere before the 1/2 Belial fight (observed;
-the cause isn't known).
+after the second Depths entry and through Yaldabaoth, then goes off in `PALACE_CLEAR_SYS` at the end of the final
+boss sequence.
 
 Not decoded: which physical trigger runs HTB entry 3 (no hit shape: `type 00000000`). If 12310 goes off on the
 second Depths entry in game, that entry isn't what runs. Also not traced: the exact EXP formula inside
