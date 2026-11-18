@@ -10,8 +10,8 @@ game; the last section lists what to watch.*
 
 ## In plain terms
 
-- Jose's EXP/money/item boost doesn't wear off. Your stamp points stay set. Before giving battle rewards, the game
-  checks "are we in Mementos?" and only gives the boost if the answer is yes.
+- Your stamp points with Jose (EXP/money/items) stay set. Before giving battle rewards, the game checks "are we in
+  Mementos?" and only gives the boost if the answer is yes.
 - The door at the bottom of the Path of Da'at turns that "in Mementos" switch **off** the first time you go
   through it (the visit with the "Is this thing seriously a door?" scene). That's why the boost normally stops in
   the Depths.
@@ -31,8 +31,8 @@ The rest of this page is the technical detail behind that.
 
 ## Short version
 
-- Jose's modifier isn't a timed buff and nothing "clears" it. The stamp points you give to EXP, money and items
-  are **permanent save data**. Only a reset with flowers changes them.
+- The stamp points you give to EXP, money and items are **permanent save data**. Only a reset with flowers changes
+  them. Whether the bonus applies is decided by a flag, checked at each battle.
 - The bonus applies whenever two flags are on: **flag 12310 (`0x50000000 + 22`, "in Mementos")** and flag
   `0x20000000 + 5053` (Jose's shop unlocked, never turned off). The real switch is flag 12310.
 - Entering the Depths "clears" the boost because the trigger at the end of the Path of Da'at,
