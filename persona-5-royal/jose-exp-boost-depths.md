@@ -23,9 +23,9 @@ game; the last section lists what to watch.*
 **The trick:** go through the door once, go back up to Mementos, then come back down. The switch stays on, and the
 boost applies for the rest of the Depths, the Holy Grail and Yaldabaoth.
 
-**When it ends:** nothing in the ending or the date change resets it, and saving keeps it. It turns off the first
-time you **leave the Metaverse** in the third semester, by exiting Mementos or Maruki's Palace. Until then it also
-applies in Maruki's Palace.
+**When it ends:** somewhere between Yaldabaoth and the start of the third semester. Tested: the 1/2 Belial fight
+in Maruki's Palace has **no** boost icon. The exact point where it resets isn't known yet; none of the game scripts
+I could read turn it off in that stretch.
 
 The rest of this page is the technical detail behind that.
 
@@ -44,12 +44,10 @@ The rest of this page is the technical detail behind that.
   `DUNGEON_EXIT`), the 12/24 trip to Leblanc and back (`FHIT_010_001_00` `Main_LastDungeonShop`), and entering
   from Shibuya (`FINI_001_006` `GOTO_MEMENTOS`). So after one trip back up, the flag stays on for the rest of the
   Depths and the Qliphoth World. The EXP getter checks only that flag, so battles there get the multiplier.
-- **After Yaldabaoth nothing clears it straight away.** No event, scheduler or calendar script turns flag
-  12310 off, and nothing in the game code wipes its flag section. The section is saved and loaded with the rest of
-  the flags, so the flag carries into the third semester. It goes off at the **first Metaverse exit procedure** that
-  runs after that (a `dungeon_return` / `FLD_EXIT_DUNGEON`): leaving Mementos or Maruki's Palace through an exit,
-  or a palace boss clear that returns you to the real world. Until then the boost also applies in palace battles,
-  Maruki's Palace included.
+- **It's gone by 1/2.** In game, the 1/2 Belial fight (Maruki's Palace) has no boost icon. What resets it
+  between Yaldabaoth and 1/2 isn't found yet: no decompiled field, event, scheduler or battle script turns flag
+  12310 off in that stretch, and 1/2 enters the palace (`sdl01_02_PM_B_S3`, `CALL_FIELD(162, 1, 2, 0)`) without
+  touching it. See section 5.
 
 ## 1. Where the modifier lives
 
@@ -176,20 +174,23 @@ back, and the next descent uses the GENERIC trigger. So leaving doesn't help on 
 
 ## 5. What clears it after Yaldabaoth
 
-It isn't the end of the Grail, the ending, the 1/2 transition or a date: none of those scripts touch flag 12310,
-and it survives saving. It goes off at the next run of any of these:
+**Unresolved.** Tested in game: the 1/2 Belial fight has no boost icon, so something between Yaldabaoth and 1/2
+resets it. Static analysis hasn't found what:
 
-- a `dungeon_return` procedure (the Metaverse exit/clear path: Mementos entrance exit `FHIT_190_001_00`
-  `GOTO_EXIT` outside 12/24 to 12/31, palace entrance `DUNGEON_EXIT`, boss-clear and quest-end returns), each of
-  which ends in `FLD_EXIT_DUNGEON`;
-- `GO_TO_161_01` (can't happen again, 5056 is on);
-- `GOTO_SHOP` (only 12/24 to 12/31).
+- The script-side clears are all accounted for: `dungeon_return` procedures (each ending in `FLD_EXIT_DUNGEON`),
+  `GO_TO_161_01` (can't run again, 5056 is on), `GOTO_SHOP` (only 12/24 to 12/31) and `CORP008`. None of them run
+  after Yaldabaoth as far as the scripts show.
+- The scheduler for 12/24 night through 1/2 (`sdl12_24_PM_D`, `sdl01_01_*_S3`, `sdl01_02_*_S3`) turns off
+  flag 12308 (`+20`, "in the Metaverse") but not 12310. `EveryNight` and `EveryMorning` don't touch section 5.
+  1/2 enters Maruki's Palace with `CALL_FIELD(162, 1, 2, 0)` and doesn't touch it either.
+- Battle event scripts (`BATTLE/EVENT/SCRIPT`, `BATTLE/SCRIPT`), field box, object, voice and safety-room scripts
+  don't write it.
+- The only native write found is inside `FLD_EXIT_DUNGEON`. The game does have data-driven flag writes (table
+  records with a section and index, for example `0x1410A88E6` and `0x1410A9CC7` build `0x50000000 + index`), and
+  some code is in protected sections that can't be read statically. Either could be the reset.
 
-In practice that's the **first time you leave the Metaverse in the third semester**, through Mementos or Maruki's
-Palace (162). Entering Mementos sets the flag again anyway. Entering Maruki's Palace doesn't clear it
-(`FINI_162_001` clears it only in `dungeon_return`). So if the first third-semester Metaverse trip is the palace,
-its battles should keep the boost until you leave. One side effect: while the flag is on, the palace's
-`dungeon_start_format` takes the Mementos branch (`SET_COUNT(272, COUNT(139))` instead of the palace count).
+The quickest way to settle it is a live log of flag 12310 from the end of the Yaldabaoth fight to 1/2 (table
+below). The first frame where bit 22 drops points to the routine.
 
 ## What to watch live
 
@@ -204,8 +205,8 @@ Poll these (with a memory reader or flag logger) on 12/24 and after Yaldabaoth:
 | EXP multiplier | breakpoint or return value of `0x1410CE820` | 1.0 means no boost |
 
 Expected: 12310 goes off on the first `CALL_FIELD(161)`, on again after "go back up" or the Leblanc trip, stays on
-after the second Depths entry, stays on through Yaldabaoth and the date change, and goes off at the first
-third-semester Metaverse exit.
+after the second Depths entry and through Yaldabaoth, then goes off somewhere before the 1/2 Belial fight (observed;
+the cause isn't known).
 
 Not decoded: which physical trigger runs HTB entry 3 (no hit shape: `type 00000000`). If 12310 goes off on the
 second Depths entry in game, that entry isn't what runs. Also not traced: the exact EXP formula inside
