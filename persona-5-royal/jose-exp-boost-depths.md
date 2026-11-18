@@ -4,9 +4,10 @@ Why the stamp bonus you set with Jose (EXP, money, items) normally switches off 
 Mementos, why it stays on after you go back up and come down again, and what finally turns it off after
 Yaldabaoth.
 
-*PC version (Steam build 15515071, image base `0x140000000`). Static analysis of the executable, the decompiled
-field, event and scheduler scripts, and the field hit tables (`FIELD/HIT/*.HTB`), November 2026. Not yet checked in
-game; the last section lists what to watch.*
+*PC version (Steam build 15515071, image base `0x140000000`). November 2026. Static analysis of the executable and
+the game's scripts (field, event, scheduler, boss and shared dungeon scripts, plus the field hit tables), checked in
+game with a live log of the flag writes and the script procedure behind each one. Tested in game: the trick itself,
+Yusuke's confidant fight on 9/19, the 9/20 palace and the 1/2 Belial fight.*
 
 ## In plain terms
 
@@ -27,10 +28,15 @@ boost applies for the rest of the Depths, the Holy Grail and Yaldabaoth.
 finishes with the game's normal "palace cleared, back to the real world" routine, and that turns the switch off. So
 Yaldabaoth is the last fight that gets the boost; the 1/2 Belial fight doesn't (tested).
 
-**Can it be done earlier?** Not that we've found. Every way back to the real world turns the switch off, including
-the end of boss fights started from the real world (tested: Yusuke's confidant fight on 9/19 gets the boost, but the
-fight's own script turns it off before you leave). The 12/24 trick works because the Depths, the Holy Grail and
-Yaldabaoth are one long stay in the Metaverse with no return in between.
+**Can it be done earlier?** No. Every boss script and every Mementos script was checked: every way back to the real
+world turns the switch off, including the end of boss fights started from the real world (tested: Yusuke's confidant
+fight on 9/19 gets the boost, but the fight's own script turns it off before you leave). The 12/24 trick works
+because the Depths, the Holy Grail and Yaldabaoth are one long stay in the Metaverse with no return in between.
+
+**Saving, loading and dying:** the switch is saved with the rest of your flags, and loading puts it back exactly as it
+was. A save made in the Depths after the trick keeps the boost when you load it (useful for resets); a save made
+before the trick doesn't have it. Dying sends you back to a save, so the same applies. Save/load can't move the trick
+earlier either: before 12/24 the switch is never on anywhere you can save.
 
 The rest of this page is the technical detail behind that.
 
@@ -48,7 +54,8 @@ The rest of this page is the technical detail behind that.
 - Every way back into Mementos turns 12310 on again: the Depths entrance exit (`FHIT_161_001_00`
   `DUNGEON_EXIT`), the 12/24 trip to Leblanc and back (`FHIT_010_001_00` `Main_LastDungeonShop`), and entering
   from Shibuya (`FINI_001_006` `GOTO_MEMENTOS`). So after one trip back up, the flag stays on for the rest of the
-  Depths and the Qliphoth World. The EXP getter checks only that flag, so battles there get the multiplier.
+  Depths and the Qliphoth World. The EXP getter doesn't check where you are, only the two flags (and 5053 stays on),
+so battles there get the multiplier.
 - **It ends right after Yaldabaoth.** Boss fights run from `FIELD/SCRIPT/BOSS.BF` (`FLD_START_BOSS(n)` runs one of
   its procedures). `D08_LAST_BOSS_BATTLE` plays the Holy Grail, Yaldabaoth (`CALL_EVENTBATTLE(459, 2, 785)`) and the
   ending scenes, then calls `PALACE_CLEAR_SYS()`, which runs `dungeon_return` and clears 12310 (and 12308) through
@@ -128,12 +135,18 @@ Off (only these):
   by `DUNGEON_EXIT`, `GOTO_EXIT`, boss-clear and quest-end procedures and by `dungeon_return_calendar`):
   `BIT_OFF(+20)`, `BIT_OFF(+22)`, `BIT_OFF(+21)`, then `FLD_EXIT_DUNGEON()`. The native `FLD_EXIT_DUNGEON`
   (`0x141171660`) also clears bits 20 and 22 itself (`and [section5], 0xFFBFFFFF` at `0x14117174F`).
-- `CORP008` (a confidant Mementos fight).
+- The boss script `FIELD/SCRIPT/BOSS.BF` (run by `FLD_START_BOSS(n)`): `PALACE_CLEAR_SYS` and its other
+  `dungeon_return` calls, and fights started from the real world that clean up themselves (`D00_YUSUKE_COOP_BATTLE`).
+  See section 5.
+- `CORP008` (a confidant Mementos fight started from the real world).
 
-No event script, scheduler script or calendar routine writes flag 12310 (E080_* only read it). The game code never
-writes it except inside `FLD_EXIT_DUNGEON`. No routine clears flag section 5 on its own: `0x140D63840` clears the
-whole 0x640-byte flag area only on a new game, and the save loader `0x140D61160` restores all 0x640 bytes,
-section 5 included.
+No event, scheduler or calendar script writes flag 12310 (E080_* only read it). The game's own code never writes it
+except inside `FLD_EXIT_DUNGEON`, and nothing clears its flag section on its own: `0x140D63840` clears the whole
+0x640-byte flag area only on a new game.
+
+**Saving and loading.** The save loader `0x140D61160` restores all 0x640 bytes of flags, section 5 included, so
+flag 12310 comes back exactly as it was saved. A save made in the Depths after the trick keeps the boost; dying and
+loading it keeps it too.
 
 ## 4. Why the Depths clears it only once
 
@@ -168,9 +181,9 @@ Only `GO_TO_161_01` (12/24) and `FINI_190_001` (1/13 to 3/31) turn 5056 on, and 
 2. First Depths entry: `GO_TO_161_01` clears 12310 and sets 5056. **No boost in the Depths.**
 3. Back up to Mementos (Depths entrance "exit", or Leblanc and back): 12310 is on again.
 4. Down again: 5056 is on, so `GO_TO_161_01_GENERIC` runs and 12310 **stays on**. The boost applies in the Depths.
-5. Field 161 init (`FINI_161_001` `f161_001_init`) and the rest of the Depths and Qliphoth World scripts never
-   clear 12310. The Holy Grail and Yaldabaoth sequences are boss fights and events (`FLD_START_BOSS` 60 to 63,
-   `CALL_EVENT`) with no `dungeon_return`.
+5. Field 161 init (`FINI_161_001` `f161_001_init`) and the rest of the Depths scripts don't clear 12310. The Holy
+   Grail, the Qliphoth World scenes and Yaldabaoth all run inside one boss procedure (`BOSS.BF`
+   `D08_LAST_BOSS_BATTLE`), which only clears the switch at its very end (section 5).
 
 The 12/24 entrance "exit" (`GOTO_SHOP`) does clear the flag, but `Main_LastDungeonShop` sets it again on the way
 back, and the next descent uses the GENERIC trigger. So leaving doesn't help on 12/24. The normal exit
@@ -220,7 +233,7 @@ clearing the switch.
 
 ## What to watch live
 
-Poll these (with a memory reader or flag logger) on 12/24 and after Yaldabaoth:
+To check it yourself, poll these with a memory reader or flag logger:
 
 | What | Address | Check |
 |---|---|---|
@@ -234,7 +247,7 @@ Expected: 12310 goes off on the first `CALL_FIELD(161)`, on again after "go back
 after the second Depths entry and through Yaldabaoth, then goes off in `PALACE_CLEAR_SYS` at the end of the final
 boss sequence.
 
-Not decoded: which physical trigger runs HTB entry 3 (no hit shape: `type 00000000`). If 12310 goes off on the
-second Depths entry in game, that entry isn't what runs. Also not traced: the exact EXP formula inside
-`0x140927050`. The getters return the multiplier and the routine keeps it (`xmm12`, `xmm13`), but I didn't follow
-the multiplication.
+Not decoded: which physical trigger runs HTB entry 3 (it has no hit shape: `type 00000000`). The trick works in
+game, so that entry is what runs on the second Depths entry. Also not traced: the exact EXP formula inside
+`0x140927050`. The getters return the multiplier and the routine keeps it (`xmm12`, `xmm13`), but the
+multiplication itself wasn't followed.
