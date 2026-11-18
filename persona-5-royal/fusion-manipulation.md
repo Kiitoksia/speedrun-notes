@@ -125,10 +125,20 @@ Fusions work as before: a fusion right after an Electric Chair is always safe, a
 fusion is always an accident.
 
 **The chance after a fusion.** It's the alarm's accident chance. It starts at 0% when the alarm starts and goes up
-with what you do during the alarm: each persona bought from the compendium adds 25%, fusions can add more, and once
-you've done two of the same action (two fusions, or two Electric Chairs) it gets an extra 50%. It can't go above
-100%. A warning shows up once it reaches 90%. How much one fusion adds hasn't been measured yet, but it's more than 0
-(a "fuse, then Electric Chair" has failed in a run).
+with what you do during the alarm:
+
+- **Each persona summoned from the compendium during the alarm: +25%.** This is the usual culprit.
+- A normal fusion: +0% (measured). The game has a rule that adds to it after some other kind of fusion, but which
+  kind is untested.
+- Doing two of the same action in one alarm (two fusions, or two Electric Chairs): +50%.
+
+It can't go above 100%, and a warning shows up once it reaches 90%. So "fuse, then Electric Chair" with no summon
+during the alarm can't fail, while "fuse, summon the persona, Electric Chair" fails 25% of the time. The summon
+counts no matter when you do it in that alarm, before or after the fusion.
+
+Tested in the first forced alarm (Kaneshiro): fuse Shiki-Ouji, summon Regent, Electric Chair Regent showed a 25%
+chance in the game's memory (it worked that time). Summon Regent, Electric Chair first, then fuse: no roll at all,
+and the fusion was normal.
 
 **What you get when it fails.** One random item, 10% each, from a list picked by the persona's base level:
 
@@ -144,16 +154,15 @@ A failed Electric Chair still counts as an Electric Chair, so a fusion right aft
 
 **What to do.** If you need one fusion and one Electric Chair in the same alarm, **Electric Chair first, then
 fuse**. Both are then guaranteed: the Electric Chair is the alarm's first action, and the fusion comes right after an
-Electric Chair. "Fuse, then Electric Chair" risks losing the alarm item.
+Electric Chair. This holds even if you summon the persona during the alarm. "Fuse, summon, then Electric Chair"
+risks losing the alarm item (25% per summon).
 
-In the glowing-pair setup from section 2, the Electric Chair in step 2 comes right after a fusion, so it can fail.
-That doesn't hurt the setup (step 3 is still safe); only the item is lost.
+In the glowing-pair setup from section 2, the Electric Chair in step 2 comes right after a fusion. It can only fail
+if you summoned something earlier in that alarm, and even then step 3 is still safe; only the item is lost.
 
 ## Open questions
 
 - **Consoles.** Everything here is the PC version.
 - **Gallows instead of Electric Chair** between the two setup fusions: untested.
-- **How much one alarm fusion raises the accident chance**, which sets the odds of a "fuse, then Electric Chair"
-  failure. Being measured.
 - **Whether a failed Electric Chair counts toward the twins ending the alarm.** It triggers the same "accident" event
   as a fusion accident, but that hasn't been checked in game.
