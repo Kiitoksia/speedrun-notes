@@ -200,8 +200,23 @@ CALL_EVENTBATTLE(704, 12, 702) ... CALL_EVENT(704, 300) in D00_YUSUKE_COOP_BATTL
 BIT_OFF(12308), BIT_OFF(12310), CALL_CALENDAR()         in D00_YUSUKE_COOP_BATTLE
 ```
 
-Every other `BOSS.BF` procedure that ends a Metaverse stay goes through `dungeon_return` or `PALACE_CLEAR_SYS`.
-No route has been found that keeps 12310 on into another fight after you return to the real world.
+**Full sweep for an earlier version (November 2026).** Every script that runs while 12310 can be on was checked
+for a way out that skips the clear:
+
+- `BOSS.BF`, all 110 boss procedures: each either clears the switch (`dungeon_return`, `PALACE_CLEAR_SYS` or its own
+  `BIT_OFF`) or leaves you in the same dungeon. The one that returns to the calendar without a clear,
+  `D10_07_e511_350_BATTLE`, is a Maruki's Palace fight, where 12310 is already off.
+- Mementos scripts: the entrance (190), every floor and Jose's shop (191 to 195), the shared Mementos script
+  `FIELD/ETC/AT_DNG.BF`, and the shared dungeon scripts `DUNGEON.BF`, `RESIDENT.BF` and the map/fast-travel menu
+  `MESSAGESELDNG.BF`. Every way out of Mementos runs `dungeon_return`. Escape items go to the Mementos entrance
+  (`at_dng_escape`, `CALL_FIELD(190, 1, 1, 0)`), fast travel stays inside the current dungeon, and the briefing
+  menu sends you to the Mementos entrance when used in Mementos (it only jumps to a palace entrance from inside that
+  palace).
+- Other ways the switch gets turned on: confidant fights (Yusuke's `CORP004`, `CORP008`) clear it themselves; story
+  entries (`GOTO_MEMENTOS`, the 5/7 scheduler) lead into Mementos, so the normal exits apply.
+
+So the Depths door on 12/24 is the only place where the game lets you out of Mementos into other fights without
+clearing the switch.
 
 ## What to watch live
 
